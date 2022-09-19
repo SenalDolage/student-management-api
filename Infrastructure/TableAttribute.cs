@@ -4,7 +4,8 @@
     public class TableAttribute : Attribute
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="MBTableAttribute"/> class.
+        /// Mongo Table Attribute Class.
+        /// Initializes a new instance of the <see cref="TableAttribute"/> class.
         /// </summary>
         /// <param name="tableName">Table name.</param>
         public TableAttribute(string tableName)

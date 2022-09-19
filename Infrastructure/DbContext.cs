@@ -16,7 +16,7 @@ namespace StudentManagementAPI.Infrastructure
         private readonly IMongoDatabase mongoDb;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MongoDbContext"/> class.
+        /// Initializes a new instance of the <see cref="DbContext"/> class.
         /// </summary>
         /// <param name="mongoConfiguration">Mongo db configuration.</param>
         public DbContext(IOptions<DatabaseSettings> mongoConfiguration)
@@ -25,8 +25,8 @@ namespace StudentManagementAPI.Infrastructure
 
             var mongoSettings = MongoClientSettings.FromConnectionString(mongoConfig.ConnectionString);
 
-            this.MongoClient = new MongoClient(mongoSettings);
-            this.mongoDb = this.MongoClient.GetDatabase(mongoConfig.DatabaseName);
+            MongoClient = new MongoClient(mongoSettings);
+            mongoDb = MongoClient.GetDatabase(mongoConfig.DatabaseName);
         }
 
         /// <summary>
