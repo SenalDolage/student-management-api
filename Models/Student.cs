@@ -4,12 +4,8 @@ using StudentManagementAPI.Enums;
 
 namespace StudentManagementAPI.Models
 {
-    public class Student
+    public class Student : Entity
     {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; } = string.Empty;
-
         [BsonElement("name")]
         public string Name { get; set; } = string.Empty;
 

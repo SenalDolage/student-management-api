@@ -1,33 +1,39 @@
 ﻿using StudentManagementAPI.Interfaces;
 using StudentManagementAPI.Models;
+using StudentManagementAPI.Repositories;
 
 namespace StudentManagementAPI.Services
 {
-    public class StudentService : IStudentService
+    public class StudentService : StudentRepository, IStudentService
     {
-        public Student CreateStudent(Student student)
+        public StudentService(IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            throw new NotImplementedException();
         }
 
-        public List<Student> GetAllStudents()
+        public async Task<Student> CreateStudent(Student student)
         {
-            throw new NotImplementedException();
+            await CreateAsync(student);
+            return student;
         }
 
-        public Student GetStudent(string id)
+        public Task<List<Student>> GetAllStudents()
         {
-            throw new NotImplementedException();
+            return GetAll();
         }
 
-        public bool RemoveStudent(string id)
+        public Task<Student> GetStudent(string id)
         {
-            throw new NotImplementedException();
+            return GetByIdAsync(id);
         }
 
-        public bool UpdateStudent(string id, Student student)
+        public Task<bool> DeleteStudent(string id)
         {
-            throw new NotImplementedException();
+            return DeleteAsync(id);
+        }
+
+        public Task<Student> UpdateStudent(string id, Student student)
+        {
+            return UpdateAsync(student);
         }
     }
 }
