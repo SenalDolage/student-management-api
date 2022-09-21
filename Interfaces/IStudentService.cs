@@ -30,7 +30,7 @@ namespace StudentManagementAPI.Interfaces
         /// <param name="id">Student Id</param>
         /// <param name="student">Student</param>
         /// <returns>Task&lt;Student&gt;.</returns>
-        Task<Student> UpdateStudent(string id, Student student);
+        Task<Student> UpdateStudent(Student student);
 
         /// <summary>
         /// Remove Student

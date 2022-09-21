@@ -9,7 +9,7 @@ namespace StudentManagementAPI.Models
         [BsonElement("name")]
         public string Name { get; set; } = string.Empty;
 
-        [BsonElement("graduated")]
+        [BsonElement("isGraduated")]
         public bool IsGraduated { get; set; }
 
         [BsonElement("courses")]

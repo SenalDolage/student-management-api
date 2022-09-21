@@ -10,16 +10,18 @@ namespace StudentManagementAPI.Models
         /// </summary>
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; protected set; }
+        public string Id { get; set; }
 
         /// <summary>
         /// Gets the created date of the document.
         /// </summary>
-        public DateTime? CreatedDate { get; internal set; }
+        [BsonElement("createdDate")]
+        public DateTime? CreatedDate { get; set; }
 
         /// <summary>
         /// Gets the changed date of the document.
         /// </summary>
-        public DateTime? ChangedDate { get; internal set; }
+        [BsonElement("changedDate")]
+        public DateTime? ChangedDate { get; set; }
     }
 }

@@ -6,86 +6,80 @@ using System.Linq.Expressions;
 
 namespace StudentManagementAPI.Repositories
 {
-    public class BaseRepository<TEntity> where TEntity : Entity
+    public class BaseRepository<TEntity> : IBaseRepository<TEntity> where TEntity : Entity
     {
         /// <summary>
         /// The mongo repository.
         /// </summary>
-        private readonly IMongoRepository<TEntity> repository;
+        private readonly IMongoCollection<TEntity> _dbCollection;
 
-        public BaseRepository(IServiceProvider serviceProvider)
+        public BaseRepository(string collection, IMongoDatabase mongoDatabase)
         {
-            var mongoDbContext = serviceProvider.GetRequiredService<DbContext>();
-            var mongoDbSession = serviceProvider.GetRequiredService<IClientSessionHandle>();
-
-            repository = new MongoRepository<TEntity>(mongoDbContext, mongoDbSession);
+            Collection = collection;
+            _dbCollection = mongoDatabase.GetCollection<TEntity>(Collection);
         }
+
+        public string Collection { get; }
 
         /// <summary>
         /// get by identifier as an asynchronous operation.
         /// </summary>
         /// <param name="id">Id.</param>
-        /// <param name="ct">Cancellation token.</param>
-        /// <param name="excludedFields">Excluded Fields.</param>
         /// <returns>Document of the provided id.</returns>
-        /// <exception cref="InvalidDataException">Invalid id.</exception>
-        protected virtual Task<TEntity> GetByIdAsync(object id, CancellationToken ct = default, params Expression<Func<TEntity, object>>[] excludedFields)
+        public async Task<TEntity> GetByIdAsync(string id)
         {
-            return repository.GetByIdAsync(id, ct, excludedFields);
+            return await _dbCollection.Find(_ => _.Id == id).FirstOrDefaultAsync();
         }
 
         /// <summary>
         /// Returns all documents.
         /// </summary>
-        /// <param name="ct">Cancellation token.</param>
         /// <returns>List of all the documents of type.</returns>
-        protected virtual Task<List<TEntity>> GetAll(CancellationToken ct = default)
+        public async Task<List<TEntity>> GetAll()
         {
-            return repository.GetAll(ct);
+            return await _dbCollection.Find(_ => true).ToListAsync();
         }
 
         /// <summary>
         /// Counts the documents.
         /// </summary>
-        /// <param name="filter">The filter.</param>
-        /// <param name="ct">The cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Task&lt;System.Int64&gt;.</returns>
-        protected virtual Task<long> CountAsync(Expression<Func<TEntity, bool>> filter, CancellationToken ct = default)
+        public async Task<long> CountAsync(Expression<Func<TEntity, bool>> filter)
         {
-            return repository.CountAsync(filter, ct);
+            return await _dbCollection.CountAsync(filter);
         }
 
         /// <summary>
         /// Creates a new document.
         /// </summary>
         /// <param name="model">Model to create the document.</param>
-        /// <param name="ct">Cancellation token.</param>
         /// <returns>A <see cref="T:System.Threading.Tasks.Task" /> representing the asynchronous operation.</returns>
-        protected virtual Task CreateAsync(TEntity model, CancellationToken ct = default)
+        public async Task<TEntity> CreateAsync(TEntity model)
         {
-            return repository.CreateAsync(model, ct);
+            await _dbCollection.InsertOneAsync(model);
+            return model;
         }
 
         /// <summary>
         /// Delete as an asynchronous operation.
         /// </summary>
         /// <param name="id">Id to delete.</param>
-        /// <param name="ct">Cancellation token.</param>
-        /// <returns>A <see cref="T:System.Threading.Tasks.Task" /> representing the asynchronous operation with the result of the delete operation.</returns>
-        protected virtual Task<bool> DeleteAsync(string id, CancellationToken ct = default)
+        /// <returns>The asynchronous operation with the result of the delete operation.</returns>
+        public async Task<bool> DeleteAsync(string id)
         {
-            return repository.DeleteAsync(id, ct);
+            await _dbCollection.FindOneAndDeleteAsync(id);
+            return true;
         }
 
         /// <summary>
         /// Replaces given document.
         /// </summary>
         /// <param name="model">Model to replace the document from.</param>
-        /// <param name="ct">Cancellation token.</param>
         /// <returns>A <see cref="T:System.Threading.Tasks.Task" /> representing the asynchronous operation with the updated document.</returns>
-        protected virtual Task<TEntity> UpdateAsync(TEntity model, CancellationToken ct = default)
+        public async Task<TEntity> UpdateAsync(TEntity model)
         {
-            return repository.UpdateAsync(model, ct);
+            await _dbCollection.FindOneAndReplaceAsync(model.Id, model);
+            return model;
         }
     }
 }

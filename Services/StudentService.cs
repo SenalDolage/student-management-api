@@ -4,36 +4,61 @@ using StudentManagementAPI.Repositories;
 
 namespace StudentManagementAPI.Services
 {
-    public class StudentService : StudentRepository, IStudentService
+    public class StudentService : IStudentService
     {
-        public StudentService(IServiceProvider serviceProvider) : base(serviceProvider)
+        private readonly IStudentRepository _studentRepository;
+
+        public StudentService(IStudentRepository studentRepository)
         {
+            _studentRepository = studentRepository;
         }
 
-        public async Task<Student> CreateStudent(Student student)
+        public async Task<Student> CreateStudent(Student newStudent)
         {
-            await CreateAsync(student);
+            newStudent.ChangedDate = DateTime.Now;
+            newStudent.CreatedDate = DateTime.Now;
+            await _studentRepository.CreateStudent(newStudent);
+            return await GetStudent(newStudent.Id);
+        }
+
+        public async Task<bool> DeleteStudent(string id)
+        {
+            var student = await _studentRepository.GetStudent(id);
+            if (student == null)
+            {
+                throw new InvalidDataException();
+            }
+
+            return await _studentRepository.DeleteStudent(id);
+        }
+
+        public async Task<List<Student>> GetAllStudents()
+        {
+            return await _studentRepository.GetAllStudents();
+        }
+
+        public async Task<Student> GetStudent(string id)
+        {
+            var student = await _studentRepository.GetStudent(id);
+            if (student == null)
+            {
+                throw new InvalidDataException();
+            }
+
             return student;
         }
 
-        public Task<List<Student>> GetAllStudents()
+        public async Task<Student> UpdateStudent(Student updatedStudent)
         {
-            return GetAll();
-        }
+            updatedStudent.ChangedDate = DateTime.Now;
+            var student = await _studentRepository.GetStudent(updatedStudent.Id);
+            if (student == null)
+            {
+                throw new InvalidDataException();
+            }
 
-        public Task<Student> GetStudent(string id)
-        {
-            return GetByIdAsync(id);
-        }
-
-        public Task<bool> DeleteStudent(string id)
-        {
-            return DeleteAsync(id);
-        }
-
-        public Task<Student> UpdateStudent(string id, Student student)
-        {
-            return UpdateAsync(student);
+            await _studentRepository.UpdateStudent(updatedStudent);
+            return await GetStudent(updatedStudent.Id);
         }
     }
 }
