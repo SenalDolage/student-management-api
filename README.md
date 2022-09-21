@@ -4,4 +4,4 @@ A .net core 6 API to maintain a student database, with the goal of using a base 
 
 ### Screenshots
 
-[![image.png](https://i.postimg.cc/qqpBXVJj/image.png)](https://postimg.cc/jwkrt1J7)
+[![image.png](https://i.postimg.cc/rsRjJbfR/image.png)](https://postimg.cc/sGy5fnd3)
